@@ -1,107 +1,231 @@
-# Decluttering templates, these need to be listed out in your lovelace config
 
-  # selects master speaker
+# These sensors hold the master speaker selected by the Input Select in the "Sonos Master Card".  The sensor allows the button to stay lit when "on".
+binary_sensor:
+  platform: template
+  sensors:
+    sonos_master_deck:
+      value_template: >-
+        {{ is_state('input_select.sonos_master', 'media_player.sonos_deck') }}
+    sonos_master_garage:
+      value_template: >-
+        {{ is_state('input_select.sonos_master', 'media_player.sonos_garage') }}
+    sonos_master_living_room:
+      value_template: >-
+        {{ is_state('input_select.sonos_master', 'media_player.sonos_living_room') }}
+    sonos_master_lounge:
+      value_template: >-
+        {{ is_state('input_select.sonos_master', 'media_player.sonos_lounge') }}
+    sonos_master_office:
+      value_template: >-
+        {{ is_state('input_select.sonos_master', 'media_player.sonos_office') }}
+    sonos_master_portable:
+      value_template: >-
+        {{ is_state('input_select.sonos_master', 'media_player.sonos_portable') }}
+          
+# Holds the status of the sonos group switches; not sure these are actually needed.  May only be to keep the buttons lit on the Group card
+input_boolean:
+  group_sonos_deck:
+    name: Group with Deck
+    icon: mdi:speaker-multiple
+  group_sonos_garage:
+    name: Group with Garage
+    icon: mdi:speaker-multiple  
+  group_sonos_living_room:
+    name: Group with Living Room
+    icon: mdi:speaker-multiple
+  group_sonos_lounge:
+    name: Group with Lounge
+    icon: mdi:speaker-multiple    
+  group_sonos_office:
+    name: Group with Office
+    icon: mdi:speaker-multiple
+  group_sonos_portable:
+    name: Group with Portable
+    icon: mdi:speaker-multiple
+    
+
+
+input_select:
+# These input select options MUST match the names of your sonos speakers.  The Sonos Master Card buttons select the proper input.
   sonos_master:
-    default:
-      font-size: 20px
-    card:
-      entity: binary_sensor.sonos_master_[[speaker]]
-      name: '[[name]]'
-      tap_action:
-        action: call-service
-        service: input_select.select_option
-        service_data:
-          entity_id: input_select.sonos_master
-          option: media_player.sonos_[[speaker]]
-      styles:
-        name:
-          - font-size: '[[font-size]]'
-      template: input_button_thick_name
-      type: 'custom:button-card'
-      
-  #conditional card that shows the master speaker, controls volume on master speaker,   
-  sonos_player:
-    card:
-      card:
-        cards:
-          - entity: media_player.sonos_[[speaker]]
-            hide:
-              icon: true
-              power: true
-              source: true
-              shuffle: false
-            artwork: full-cover
-            info: scroll
-            type: 'custom:mini-media-player'
-          - cards:
-            - color_type: blank-card
-              type: "custom:button-card"
-            - color_type: icon
-              icon: mdi:volume-minus
-              tap_action:
-                action: call-service
-                service: media_player.volume_down
-                service_data:
-                  entity_id:  media_player.sonos_[[speaker]]
-              type: "custom:button-card"
-            - color_type: blank-card
-              type: "custom:button-card"
-            - color_type: icon
-              icon: mdi:volume-plus
-              tap_action:
-                action: call-service
-                service: media_player.volume_up
-                service_data:
-                  entity_id:  media_player.sonos_[[speaker]]
-              type: "custom:button-card"
-            - color_type: blank-card
-              type: "custom:button-card"
-            type: horizontal-stack
-        type: 'custom:stack-in-card'
-      conditions:
-        - entity: input_select.sonos_master
-          state: media_player.sonos_[[speaker]]
-      type: conditional
-
-  # selects the playlist/source to play and calls the script
+    name: Sonos Master Speaker
+    options:
+      - media_player.sonos_deck
+      - media_player.sonos_garage
+      - media_player.sonos_living_room
+      - media_player.sonos_lounge
+      - media_player.sonos_office
+      - media_player.sonos_portable
+    initial: media_player.sonos_living_room
+# These input select options MUST match the names of your sources. The Sonos Playlist Card buttons select the input and execute a script based on this input
   sonos_playlist:
-    default:
-      - shuffle: true
-    card:
-      entity:
-      name: '[[name]]'
-      color: var(--paper-card-background-color)
-      tap_action:
-        action: call-service
-        service: script.play_sonos
-        service_data:
-          playlist: '[[playlist]]'
-          shuffle: '[[shuffle]]'
-      template: input_button_thick_name
-      type: 'custom:button-card'
+    name: Sonos Playlist
+    options:
+      - None
+      - "'80s on 8 - xmplaylist.com"
+      - "'90s on 9 - xmplaylist.com"
+      - 1st Wave - xmplaylist.com
+      - 70s Road Trip
+      - Cosco's Album of the Week
+      - Cosco Pop
+      - Cosco R&B
+      - family rock
+      - State of Jazz
+      - The Jack Bowen
+      - WBL Revisited
+      - Your Top Songs 2019
       
-  # selects which speakers to join with the master.  Locks the button for the master to avoid confusion    
-  sonos_group:
-    default:
-      - font-size: 20px
-    card:
-      entity: switch.group_sonos_[[speaker]]
-      lock:
-        enabled: >
-          [[[ return states['binary_sensor.sonos_master_[[speaker]]'].state === 'on' ]]]
-        exemptions: []
-      name: '[[name]]'
-      state:
-        - operator: template
-          styles:
-            card:
-              - border-color: var(--disabled-text-color)
-            name:
-              - color: var(--disabled-text-color)
-          value: >
-            [[[ return states['binary_sensor.sonos_master_[[speaker]]'].state === 'on' ]]]
-      styles:
-        name:
-          - font-size: '[[font-size]]'
-      template: switch_button_thick_name
-      type: 'custom:button-card'
+# This script takes the playlist passed by the Sonos Playlist Card, sets the playlist input select, and plays the selected playlist on the selected master speaker
+script:
+  play_sonos:
+    alias: Play Sonos
+    sequence:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.sonos_playlist
+          option: "{{ playlist }}"
+      - service: media_player.shuffle_set
+        data_template:
+          entity_id: "{{ states.input_select.sonos_master.state }}"
+          shuffle: "{{shuffle}}"
+      - service: media_player.select_source
+        data_template:
+          entity_id: "{{ states.input_select.sonos_master.state }}"
+          source: "{{ states.input_select.sonos_playlist.state }}"
+      # this can be excluded.  It sets the function on my Harmony remote to control Sonos volume if my Playbar is the master
+      - condition: state
+        entity_id: input_select.sonos_master
+        state: 'media_player.sonos_living_room'
+      - service: remote.turn_on
+        data:
+          entity_id: remote.living_room
+          activity: 'Listen To Sonos'
+        
+# This switch is toggled by the Sonos Group Card buttons.  It turns on an input boolean and joins the selected speaker to the master
+switch:
+  platform: template
+  switches:
+        group_sonos_deck:
+          value_template: "{{  is_state('input_boolean.group_sonos_deck', 'on')  }}"
+          turn_on:
+            - service: input_boolean.turn_on
+              entity_id: input_boolean.group_sonos_deck
+            - service: sonos.join
+              data_template:
+                master: "{{ states.input_select.sonos_master.state }}"
+                entity_id:
+                  - media_player.sonos_deck
+            - service: media_player.volume_set
+              data:
+                entity_id: media_player.sonos_deck
+                volume_level: 0.5
+          turn_off:
+            - service: input_boolean.turn_off
+              entity_id: input_boolean.group_sonos_deck
+            - service: sonos.unjoin
+              data:
+                entity_id: media_player.sonos_deck
+        group_sonos_garage:
+          value_template: "{{  is_state('input_boolean.group_sonos_garage', 'on')  }}"
+          turn_on:
+            - service: input_boolean.turn_on
+              entity_id: input_boolean.group_sonos_garage
+            - service: sonos.join
+              data_template:
+                master: "{{ states.input_select.sonos_master.state }}"
+                entity_id:
+                  - media_player.sonos_garage
+            - service: media_player.volume_set
+              data:
+                entity_id: media_player.sonos_garage
+                volume_level: 0.3
+          turn_off:
+            - service: input_boolean.turn_off
+              entity_id: input_boolean.group_sonos_garage
+            - service: sonos.unjoin
+              data:
+                entity_id: media_player.sonos_garage
+        group_sonos_living_room:
+          value_template: "{{  is_state('input_boolean.group_sonos_living_room', 'on')  }}"
+          turn_on:
+            - service: input_boolean.turn_on
+              entity_id: input_boolean.group_sonos_living_room
+            - service: sonos.join
+              data_template:
+                master: "{{ states.input_select.sonos_master.state }}"
+                entity_id:
+                  - media_player.sonos_living_room
+            - service: media_player.volume_set
+              data:
+                entity_id: media_player.sonos_deck
+                volume_level: 0.2
+            - service: remote.turn_on
+              data:
+                entity_id: remote.living_room
+                activity: 'Listen To Sonos'
+          turn_off:
+            - service: input_boolean.turn_off
+              entity_id: input_boolean.group_sonos_living_room
+            - service: sonos.unjoin
+              data:
+                entity_id: media_player.sonos_living_room
+        group_sonos_lounge:
+          value_template: "{{  is_state('input_boolean.group_sonos_lounge', 'on')  }}"
+          turn_on:
+            - service: input_boolean.turn_on
+              entity_id: input_boolean.group_sonos_lounge
+            - service: sonos.join
+              data_template:
+                master: "{{ states.input_select.sonos_master.state }}"
+                entity_id:
+                  - media_player.sonos_lounge
+            - service: media_player.volume_set
+              data:
+                entity_id: media_player.sonos_lounge
+                volume_level: 0.2
+          turn_off:
+            - service: input_boolean.turn_off
+              entity_id: input_boolean.group_sonos_lounge
+            - service: sonos.unjoin
+              data:
+                entity_id: media_player.sonos_lounge
+        group_sonos_office:
+          value_template: "{{  is_state('input_boolean.group_sonos_office', 'on')  }}"
+          turn_on:
+            - service: input_boolean.turn_on
+              entity_id: input_boolean.group_sonos_office
+            - service: sonos.join
+              data_template:
+                master: "{{ states.input_select.sonos_master.state }}"
+                entity_id:
+                  - media_player.sonos_office
+            - service: media_player.volume_set
+              data:
+                entity_id: media_player.sonos_office
+                volume_level: 0.2
+          turn_off:
+            - service: input_boolean.turn_off
+              entity_id: input_boolean.group_sonos_office
+            - service: sonos.unjoin
+              data:
+                entity_id: media_player.sonos_office
+        group_sonos_portable:
+          value_template: "{{  is_state('input_boolean.group_sonos_portable', 'on')  }}"
+          turn_on:
+            - service: input_boolean.turn_on
+              entity_id: input_boolean.group_sonos_portable
+            - service: sonos.join
+              data_template:
+                master: "{{ states.input_select.sonos_master.state }}"
+                entity_id:
+                  - media_player.sonos_portable
+            - service: media_player.volume_set
+              data:
+                entity_id: media_player.sonos_portable
+                volume_level: 0.2
+          turn_off:
+            - service: input_boolean.turn_off
+              entity_id: input_boolean.group_sonos_portable
+            - service: sonos.unjoin
+              data:
+                entity_id: media_player.sonos_portable
