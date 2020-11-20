@@ -1,0 +1,27 @@
+# Button Card templats; these need to be listed out in your lovelace config
+
+# Thick Input Name Only
+  input_button_thick_name:
+    color_type: card
+    show_icon: false
+    state:
+      - value: 'on'
+        styles:
+          name:
+            - color: var(--secondary-background-color)
+    styles:
+      card:
+        - transform: scale(0.95)
+        - border-style: solid
+        - border-width: 2px
+        - border-color: var(--primary-color)
+        - height: 60px
+      name:
+        - color: white
+        - font-size: 20px
+        - font-variant: small-caps
+        
+# Thick Switch Name Only
+  switch_button_thick_name:
+    color: auto
+    template: input_button_thick_name
