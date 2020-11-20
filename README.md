@@ -9,4 +9,4 @@ Prerequisite Lovelace cards:
   - Button Card (https://github.com/custom-cards/button-card)
   - Mini Media Player (https://github.com/kalkih/mini-media-player)
   
-  ![My Sonos](/images/logo.png)
+  ![My Sonos](/sonos.png)
