@@ -1,0 +1,263 @@
+# The actual cards that pull in the decluttering templates and make some modifications.  My Lovelace config is split up so these cards gets referenced in my view
+
+#
+# - !include /config/lovelace/includes/cards/sonos_group_card.yaml
+#
+cards:
+  - name: Group
+    template: sonos_header
+    type: 'custom:button-card'
+  - cards:
+      - type: custom:decluttering-card
+        template: sonos_group
+        variables:
+          - name: Deck
+          - speaker: deck
+      - type: custom:decluttering-card
+        template: sonos_group
+        variables:
+          - name: Garage
+          - speaker: garage
+      - type: custom:decluttering-card
+        template: sonos_group
+        variables:
+          - name: Living<br/>Room
+          - speaker: living_room
+          - font-size: 19px
+    type: horizontal-stack      
+  - color_type: blank-card
+    styles:
+      card:
+        - height: 7px
+    type: 'custom:button-card'
+  - cards:
+      - type: custom:decluttering-card
+        template: sonos_group
+        variables:
+          - name: Lounge
+          - speaker: lounge
+      - type: custom:decluttering-card
+        template: sonos_group
+        variables:
+          - name: Office
+          - speaker: office
+      - type: custom:decluttering-card
+        template: sonos_group
+        variables:
+          - name: Portable
+          - speaker: portable
+    type: horizontal-stack
+  - color_type: blank-card
+    styles:
+      card:
+        - height: 10px
+    type: 'custom:button-card'
+keep:
+  background: keep
+  border_radius: true
+  margins: keep
+type: 'custom:stack-in-card'
+
+
+#
+# - !include /config/lovelace/includes/cards/sonos_master_card.yaml
+#
+cards:
+  - name: Speakers
+    template: sonos_header
+    type: 'custom:button-card'
+  - cards:
+      - type: custom:decluttering-card
+        template: sonos_master
+        variables:
+          - name: Deck
+          - speaker: deck
+      - type: custom:decluttering-card
+        template: sonos_master
+        variables:
+          - name: Garage
+          - speaker: garage
+      - type: custom:decluttering-card
+        template: sonos_master
+        variables:
+          - name: Living<br/>Room
+          - speaker: living_room
+          - font-size: 19px
+        # The Lock and State sections can be removed.  I have this section to lock the Living Room master button if the Playbar is already in use
+        lock:
+          enabled: >
+            [[[ return states['sensor.harmony_activity_living_room'].state === 'Watch Fire TV' || states['sensor.harmony_activity_living_room'].state === 'Watch Live TV' ]]]
+          exemptions: []
+        state:
+          - operator: template
+            styles:
+              card:
+                - border-color: var(--disabled-text-color)
+              name:
+                - color: var(--disabled-text-color)
+            value: >
+              [[[ return states['sensor.harmony_activity_living_room'].state === 'Watch Fire TV' || states['sensor.harmony_activity_living_room'].state === 'Watch Live TV' ]]]
+    type: horizontal-stack
+  - color_type: blank-card
+    styles:
+      card:
+        - height: 7px
+    type: 'custom:button-card'
+  - cards:
+      - type: custom:decluttering-card
+        template: sonos_master
+        variables:
+          - name: Lounge
+          - speaker: lounge
+      - type: custom:decluttering-card
+        template: sonos_master
+        variables:
+          - name: Office
+          - speaker: office
+      - type: custom:decluttering-card
+        template: sonos_master
+        variables:
+          - name: Portable
+          - speaker: portable
+    type: horizontal-stack
+  - color_type: blank-card
+    styles:
+      card:
+        - height: 10px
+    type: 'custom:button-card'
+keep:
+  border_radius: true
+  background: true
+  margins: true
+type: 'custom:stack-in-card'
+
+
+
+#
+# - !include /config/lovelace/includes/cards/sonos_player_card.yaml
+#
+cards:
+  - type: custom:decluttering-card
+    template: sonos_player
+    variables:
+      - speaker: deck
+  - type: custom:decluttering-card
+    template: sonos_player
+    variables:
+      - speaker: garage
+  - type: custom:decluttering-card
+    template: sonos_player
+    variables:
+      - speaker: living_room
+  - type: custom:decluttering-card
+    template: sonos_player
+    variables:
+      - speaker: lounge
+  - type: custom:decluttering-card
+    template: sonos_player
+    variables:
+      - speaker: office
+  - type: custom:decluttering-card
+    template: sonos_player
+    variables:
+      - speaker: portable
+type: 'custom:stack-in-card'
+
+
+
+#
+# - !include /config/lovelace/includes/cards/sonos_playlists_card.yaml
+#
+cards:
+  - name: Playlists
+    template: sonos_header
+    type: 'custom:button-card'
+  - cards:
+      - type: custom:decluttering-card
+        template: sonos_playlist
+        variables:
+          - name: AoW
+          - playlist: Cosco's Album of the Week
+          - shuffle: false
+      - type: custom:decluttering-card
+        template: sonos_playlist
+        variables:
+          - name: WBL
+          - playlist: WBL Revisited
+      - type: custom:decluttering-card
+        template: sonos_playlist
+        variables:
+          - name: The Jack
+          - playlist: The Jack Bowen
+      - type: custom:decluttering-card
+        template: sonos_playlist
+        variables:
+          - name: Fam Rock
+          - playlist: family rock
+    type: horizontal-stack
+  - color_type: blank-card
+    styles:
+      card:
+        - height: 5px
+    type: 'custom:button-card'
+  - cards:
+      - type: custom:decluttering-card
+        template: sonos_playlist
+        variables:
+          - name: 70s
+          - playlist: 70s Road Trip
+      - type: custom:decluttering-card
+        template: sonos_playlist
+        variables:
+          - name: 80s
+          - playlist: "'80s on 8 - xmplaylist.com"
+      - type: custom:decluttering-card
+        template: sonos_playlist
+        variables:
+          - name: 90s
+          - playlist: "'90s on 9 - xmplaylist.com"
+      - type: custom:decluttering-card
+        template: sonos_playlist
+        variables:
+          - name: New Wave
+          - playlist: 1st Wave - xmplaylist.com
+    type: horizontal-stack
+  - color_type: blank-card
+    styles:
+      card:
+        - height: 5px
+    type: 'custom:button-card'
+  - cards:
+      # - color_type: blank-card
+      #   type: 'custom:button-card'
+      - type: custom:decluttering-card
+        template: sonos_playlist
+        variables:
+          - name: Pop
+          - playlist: Cosco Pop
+      - type: custom:decluttering-card
+        template: sonos_playlist
+        variables:
+          - name: R&B
+          - playlist: Cosco R&B
+      - type: custom:decluttering-card
+        template: sonos_playlist
+        variables:
+          - name: Top Songs
+          - playlist: Your Top Songs 2019
+      - type: custom:decluttering-card
+        template: sonos_playlist
+        variables:
+          - name: Jazz
+          - playlist: State of Jazz
+      # - color_type: blank-card
+      #   type: 'custom:button-card'
+    type: horizontal-stack
+  - color_type: blank-card
+    styles:
+      card:
+        - height: 10px
+    type: 'custom:button-card'    
+keep:
+  border_radius: true
+type: 'custom:stack-in-card'
