@@ -1,0 +1,107 @@
+# Decluttering templates, these need to be listed out in your lovelace config
+
+  # selects master speaker
+  sonos_master:
+    default:
+      font-size: 20px
+    card:
+      entity: binary_sensor.sonos_master_[[speaker]]
+      name: '[[name]]'
+      tap_action:
+        action: call-service
+        service: input_select.select_option
+        service_data:
+          entity_id: input_select.sonos_master
+          option: media_player.sonos_[[speaker]]
+      styles:
+        name:
+          - font-size: '[[font-size]]'
+      template: input_button_thick_name
+      type: 'custom:button-card'
+      
+  #conditional card that shows the master speaker, controls volume on master speaker,   
+  sonos_player:
+    card:
+      card:
+        cards:
+          - entity: media_player.sonos_[[speaker]]
+            hide:
+              icon: true
+              power: true
+              source: true
+              shuffle: false
+            artwork: full-cover
+            info: scroll
+            type: 'custom:mini-media-player'
+          - cards:
+            - color_type: blank-card
+              type: "custom:button-card"
+            - color_type: icon
+              icon: mdi:volume-minus
+              tap_action:
+                action: call-service
+                service: media_player.volume_down
+                service_data:
+                  entity_id:  media_player.sonos_[[speaker]]
+              type: "custom:button-card"
+            - color_type: blank-card
+              type: "custom:button-card"
+            - color_type: icon
+              icon: mdi:volume-plus
+              tap_action:
+                action: call-service
+                service: media_player.volume_up
+                service_data:
+                  entity_id:  media_player.sonos_[[speaker]]
+              type: "custom:button-card"
+            - color_type: blank-card
+              type: "custom:button-card"
+            type: horizontal-stack
+        type: 'custom:stack-in-card'
+      conditions:
+        - entity: input_select.sonos_master
+          state: media_player.sonos_[[speaker]]
+      type: conditional
+
+  # selects the playlist/source to play and calls the script
+  sonos_playlist:
+    default:
+      - shuffle: true
+    card:
+      entity:
+      name: '[[name]]'
+      color: var(--paper-card-background-color)
+      tap_action:
+        action: call-service
+        service: script.play_sonos
+        service_data:
+          playlist: '[[playlist]]'
+          shuffle: '[[shuffle]]'
+      template: input_button_thick_name
+      type: 'custom:button-card'
+      
+  # selects which speakers to join with the master.  Locks the button for the master to avoid confusion    
+  sonos_group:
+    default:
+      - font-size: 20px
+    card:
+      entity: switch.group_sonos_[[speaker]]
+      lock:
+        enabled: >
+          [[[ return states['binary_sensor.sonos_master_[[speaker]]'].state === 'on' ]]]
+        exemptions: []
+      name: '[[name]]'
+      state:
+        - operator: template
+          styles:
+            card:
+              - border-color: var(--disabled-text-color)
+            name:
+              - color: var(--disabled-text-color)
+          value: >
+            [[[ return states['binary_sensor.sonos_master_[[speaker]]'].state === 'on' ]]]
+      styles:
+        name:
+          - font-size: '[[font-size]]'
+      template: switch_button_thick_name
+      type: 'custom:button-card'
