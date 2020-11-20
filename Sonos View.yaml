@@ -1,0 +1,17 @@
+#
+# - !include /config/lovelace/includes/views/sonos.yaml
+#
+title: Sonos
+path: sonos
+icon: 'mdi:speaker-multiple'
+visible:
+  - user: 52e8caaf678d4b7ea8eaf07e8495d019
+  - user: 064822aa20f44cd2ba800a72a3484485
+badges: []
+cards:
+  - cards:
+    - !include /config/lovelace/includes/cards/sonos_master_card.yaml
+    - !include /config/lovelace/includes/cards/sonos_player_card.yaml
+    - !include /config/lovelace/includes/cards/sonos_playlists_card.yaml
+    - !include /config/lovelace/includes/cards/sonos_group_card.yaml
+    type: vertical-stack
