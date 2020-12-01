@@ -25,3 +25,18 @@
   switch_button_thick_name:
     color: auto
     template: input_button_thick_name
+
+# Sonos Header
+  sonos_header:
+    color: none
+    color_type: label-card
+    styles:
+      card:
+        - height: 10px
+      name:
+        - font-size: 24px
+        - justify-self: start
+        - padding: 0px 30px
+        - font-variant: small-caps
+        
+
